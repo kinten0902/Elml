@@ -43,7 +43,7 @@ class DataSet(object):
 
 def dense_to_one_hot(labels_dense, num_classes):
         num_labels = labels_dense.shape[0]
-        index_offset = np.arange(num_classes) * num_classes
+        index_offset = np.arange(num_labels) * num_classes
         labels_one_hot = np.zeros((num_labels, num_classes))
         labels_one_hot.flat[index_offset + labels_dense.ravel()] = 1
         return labels_one_hot
@@ -72,3 +72,22 @@ def read_data_sets(vectors, labels, one_hot, num_classes):
         data_sets.train = DataSet(train_vectors, train_labels)
         data_sets.test = DataSet(test_vectors, test_labels)
         return data_sets
+    
+def sen_to_fv(sen_id, sen_pre_id, max_len, model):
+    sen_fv = []
+    sen_pre_fv = []
+    for s, s_pre in zip(sen_id, sen_pre_id):
+        s_pad = np.pad(
+            list(map(int, s)), (0, max_len - len(s)),
+            'constant',
+            constant_values=(0, 0))
+        s_pre_pad = np.pad(
+            list(map(int, s_pre)), (0, max_len - len(s_pre)),
+            'constant',
+            constant_values=(0, 0))
+        s_vec_1d = np.array([model.wv[str(w)] for w in s_pad]).ravel()
+        s_pre_vec_1d = np.array([model.wv[str(w)] for w in s_pre_pad]).ravel()
+        sen_fv.append(s_vec_1d)
+        sen_pre_fv.append(s_pre_vec_1d)
+
+    return np.array(sen_fv), np.array(sen_pre_fv)
