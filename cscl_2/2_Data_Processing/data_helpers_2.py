@@ -5,6 +5,7 @@ class DataSet(object):
     @property
     def vectors(self):
         return self._vectors
+
     @property
     def vectors_pre(self):
         return self._vectors_pre
@@ -46,7 +47,8 @@ class DataSet(object):
             self._index_in_epoch = batch_size
             assert batch_size <= self._num_examples
         end = self._index_in_epoch
-        return self._vectors[start:end], self._vectors_pre[start:end], self._labels[start:end]
+        return self._vectors[start:end], self._vectors_pre[
+            start:end], self._labels[start:end]
 
 
 def read_data_sets(vectors, vectors_pre, labels):
