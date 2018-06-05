@@ -7,10 +7,6 @@ class DataSet(object):
         return self._vectors
 
     @property
-    def vectors_pre(self):
-        return self._vectors_pre
-
-    @property
     def labels(self):
         return self._labels
 
@@ -22,10 +18,9 @@ class DataSet(object):
     def epochs_completed(self):
         return self._epochs_completed
 
-    def __init__(self, vectors, vectors_pre, labels):
+    def __init__(self, vectors, labels):
         self._num_examples = vectors.shape[0]
         self._vectors = vectors
-        self._vectors_pre = vectors_pre
         self._labels = labels
         self._epochs_completed = 0
         self._index_in_epoch = 0
@@ -40,31 +35,27 @@ class DataSet(object):
             perm = np.arange(self._num_examples)
             np.random.shuffle(perm)
             self._vectors = self._vectors[perm]
-            self._vectors_pre = self._vectors_pre[perm]
             self._labels = self._labels[perm]
             # start next epoch
             start = 0
             self._index_in_epoch = batch_size
             assert batch_size <= self._num_examples
         end = self._index_in_epoch
-        return self._vectors[start:end], self._vectors_pre[
-            start:end], self._labels[start:end]
+        return self._vectors[start:end], self._labels[start:end]
 
 
-def read_data_sets(vectors, vectors_pre, labels):
+def read_data_sets(vectors, labels):
     class DataSets(object):
         pass
 
     data_sets = DataSets()
     train_flag = np.arange(len(vectors)) % 10 != 0
     train_vectors = vectors[train_flag]
-    train_vectors_pre = vectors_pre[train_flag]
     train_labels = labels[train_flag]
     test_vectors = vectors[~train_flag]
-    test_vectors_pre = vectors_pre[~train_flag]
     test_labels = labels[~train_flag]
-    data_sets.train = DataSet(train_vectors, train_vectors_pre, train_labels)
-    data_sets.test = DataSet(test_vectors, test_vectors_pre, test_labels)
+    data_sets.train = DataSet(train_vectors, train_labels)
+    data_sets.test = DataSet(test_vectors, test_labels)
     return data_sets
 
 
