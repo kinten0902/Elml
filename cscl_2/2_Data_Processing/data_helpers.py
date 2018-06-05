@@ -1,5 +1,5 @@
 import numpy as np
-
+from gensim.models import word2vec
 
 class DataSet(object):
     @property
@@ -85,3 +85,13 @@ def sen_to_fv(sen, max_len, model, ravel):
             s_vec = np.array([model.wv[str(w)] for w in s_pad])
         sen_fv.append(s_vec)
     return np.array(sen_fv)
+
+
+def get_w2v_model():
+    return word2vec.Word2Vec.load("../data/w2v_model")
+
+def train_w2v_model(sents, wv_size):
+    model = word2vec.Word2Vec(sents, size=wv_size, min_count=1, window=5)
+    model.save("../data/w2v_model")
+    
+    
